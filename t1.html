@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ワークサイズQRシステム</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        /* 全体レイアウト */
+        body { font-family: sans-serif; background-color: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; }
+        
+        /* 入力エリア（画面のみ表示） */
+        .no-print {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            z-index: 100;
+        }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; }
+        input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+        
+        button { width: 100%; padding: 14px; margin-top: 10px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; font-size: 16px; }
+        .btn-gen { background: #2563eb; color: white; }
+        .btn-prt { background: #10b981; color: white; margin-top: 15px; }
+
+        /* 印刷・プレビューエリア */
+        #print-page {
+            background: white;
+            width: 210mm; 
+            /* 高さを固定せず、中身に合わせることで2ページ目を防ぐ */
+            padding: 20mm;
+            box-sizing: border-box;
+            text-align: center;
+            border: 1px solid #ddd;
+            display: none;
+            overflow: hidden; /* はみ出し防止 */
+        }
+
+        #print-title {
+            font-size: 32pt;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #000;
+            padding-bottom: 10px;
+        }
+
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+        }
+
+        .json-preview { color: #666; font-size: 14pt; }
+
+        /* 印刷実行時の設定（ここが重要） */
+        @media print {
+            @page { 
+                size: A4 portrait; 
+                margin: 0; /* ブラウザ標準の余白をゼロに */
+            }
+            body { background: white; padding: 0; margin: 0; }
+            .no-print { display: none !important; }
+            #print-page { 
+                display: block !important; 
+                border: none; 
+                width: 100%; 
+                margin: 0;
+                padding: 20mm;
+                page-break-after: avoid; /* 次のページを作らない */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <h2 style="margin-top:0;">ワークサイズ入力</h2>
+    <div class="input-group">
+        <label>タイトル</label>
+        <input type="text" id="titleInput" value="ワークサイズ情報">
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <div class="input-group" style="flex:1;"><label>X</label><input type="number" id="sizeX" value="400"></div>
+        <div class="input-group" style="flex:1;"><label>Y</label><input type="number" id="sizeY" value="800"></div>
+        <div class="input-group" style="flex:1;"><label>R</label><input type="number" id="cornerR" value="65"></div>
+    </div>
+    <button class="btn-gen" onclick="generateQR()">QRコード生成</button>
+    <button class="btn-prt" onclick="window.print()">印刷する</button>
+</div>
+
+<div id="print-page">
+    <div id="print-title">ワークサイズ情報</div>
+    <div id="qrcode"></div>
+    <div id="json-text" class="json-preview"></div>
+</div>
+
+<script>
+    function generateQR() {
+        const title = document.getElementById('titleInput').value;
+        const x = document.getElementById('sizeX').value;
+        const y = document.getElementById('sizeY').value;
+        const r = document.getElementById('cornerR').value;
+
+        document.getElementById('print-title').innerText = title;
+        const data = { x: Number(x), y: Number(y), r: Number(r) };
+        const jsonStr = JSON.stringify(data);
+        document.getElementById('json-text').innerText = "DATA: " + jsonStr;
+
+        const qrElement = document.getElementById("qrcode");
+        qrElement.innerHTML = "";
+        new QRCode(qrElement, {
+            text: jsonStr,
+            width: 250,
+            height: 250,
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        document.getElementById('print-page').style.display = 'block';
+    }
+</script>
+
+<script>
+ window.difyChatbotConfig = {
+  token: 'owamfTahm5MDIhfB',
+  inputs: {
+    // You can define the inputs from the Start node here
+    // key is the variable name
+    // e.g.
+    // name: "NAME"
+  },
+  systemVariables: {
+    // user_id: 'YOU CAN DEFINE USER ID HERE',
+    // conversation_id: 'YOU CAN DEFINE CONVERSATION ID HERE, IT MUST BE A VALID UUID',
+  },
+  userVariables: {
+    // avatar_url: 'YOU CAN DEFINE USER AVATAR URL HERE',
+    // name: 'YOU CAN DEFINE USER NAME HERE',
+  },
+ }
+</script>
+<script
+ src="https://udify.app/embed.min.js"
+ id="owamfTahm5MDIhfB"
+ defer>
+</script>
+<style>
+  #dify-chatbot-bubble-button {
+    background-color: #1C64F2 !important;
+  }
+  #dify-chatbot-bubble-window {
+    width: 24rem !important;
+    height: 40rem !important;
+  }
+</style>
+</body>
+</html>
