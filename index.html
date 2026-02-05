@@ -148,22 +148,7 @@
  id="owamfTahm5MDIhfB"
  defer>
 </script>
-<script>
-(function () {
-const selector = 'div[class="flex h-[60px] shrink-0 items-center pl-2"]';
-
-function removeTarget() {
-  document.querySelectorAll(selector).forEach(el => el.remove());
-}
-
-// 先执行一次
-removeTarget();
-
-// 监听后续动态渲染
-const observer = new MutationObserver(() => removeTarget());
-observer.observe(document.body, { childList: true, subtree: true });
-})();
-</script>
+<script src="./remove-dify-header.js" defer></script>
 
 <style>
   #dify-chatbot-bubble-button {
